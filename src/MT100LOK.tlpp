@@ -1,0 +1,30 @@
+#include "totvs.ch"
+
+
+/*/{Protheus.doc} MT100LOK
+Verifica se é permitido incluir mais de 5 itens em um
+documento de entrada.
+@type function
+@author Diego Santana
+@since 19/05/2026
+@version 1.0
+/*/
+User Function MT100LOK()
+    Local lRet := .T. // Váriavel que controla a validação
+
+    // Busca a posição do campo D1_TES no GRID
+    Local nAcolsTes := aScan(aHeader, {|x| AllTrim(x[2]) == "D1_TES"})
+    // Busca a posição do campo D1_QUANT no GRID
+    Local nAcolsQuant := aScan(aHeader, {|x| AllTrim(x[2]) == "D1_QUANT"})
+
+    // Pega o valor digitado no campo
+    Local cTes := aCols[n, nAcolsTes]
+    Local cQuant := aCols[n, nAcolsQuant]
+
+    // Verificar se o valor é permitido, através do parâmetro MV_ZZTESQT
+    if cQuant >= 5 .AND. !(cTes $ SUPERGETMV("MV_ZZTESQT"))
+        lRet := .F. // Altera o retorno para falso, impedindo o registro. 
+        Alert("Para quantidades maiores ou iguais a 5, deve-se usar as TES específicas."+CRLF+"Consulte o setor financeiro!")
+    endif
+
+Return lRet
